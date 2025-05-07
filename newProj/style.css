@@ -37,3 +37,25 @@ body {
     display: flex;
     flex-direction: column;
 }
+#massSpectrumLegend {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: #333;
+}
+
+#massGradient {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}

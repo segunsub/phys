@@ -1,7 +1,7 @@
 ﻿renderer = {
 	init: function()
 	{
-
+		this.trail = [];
 		this.a=1;
 		this.r=39;
 		this.mass = [];
@@ -29,6 +29,19 @@
 		this.Vx=[];
 		this.Vy=[];
 		this.ball_mode=[];
+
+		function createMassGradient() {
+			const canvas = document.getElementById('massGradient');
+			const ctx = canvas.getContext('2d');
+			const gradient = ctx.createLinearGradient(0, 0, 200, 0);
+
+			for(let i = 0; i <= 1; i += 0.1) {
+				const hue = 240 - (240 * i);
+				ctx.fillStyle = `hsl(${hue}, 80%, ${50 - (i * 15)}%)`;
+				ctx.fillRect(i * 200, 0, 20, 30);
+			}
+		}
+		createMassGradient();
 
 		for(var i=0;i<10;i++)
 			this.touched_ball[i]=-1;
@@ -130,28 +143,30 @@
 			this.CheckDistance();
 
 		}
-		for(var i=0;i<this.num;i++)
-		{
-			if (this.ball_mode[i]!=1) {
-				this.Vx[i]+=this.deviceTilt.x*this.g;
-				this.Vy[i]+=this.deviceTilt.y*this.g;
-			}
+		for(var i=0;i<this.num;i++) {
+			// Get mass for current ball
+			const currentMass = this.mass[i];
+
 			switch (this.ball_mode[i]) {
 				case 0:
-					this.drawBall(this.x[i],this.y[i]);
+					this.drawBall(this.x[i], this.y[i], currentMass);
 					break;
 				case 1:
-					this.drawBall1(this.x[i],this.y[i]);
+					// Fixed ball style (red)
+					ctx.fillStyle = "#ff0000";
+					ctx.beginPath();
+					ctx.arc(this.x[i], this.y[i], this.r, 0, Math.PI*2);
+					ctx.fill();
 					break;
 				case 2:
-					this.drawBall(this.x[i],this.y[i]);
+					this.drawBall(this.x[i], this.y[i], currentMass);
 					if (i!=0) {
 						ctx.strokeStyle="black";
 						this.drawLine(this.x[i-1],this.y[i-1],this.x[i],this.y[i]);
 					}
 					break;
 				case 3:
-					this.drawBall(this.x[i],this.y[i]);
+					this.drawBall(this.x[i], this.y[i], currentMass);
 					if (i!=0) {
 						ctx.strokeStyle="gray";
 						this.drawLine(this.x[i-1],this.y[i-1],this.x[i],this.y[i]);
@@ -226,9 +241,39 @@
 		return IsTooClose;
 	},
 
-	drawBall: function(x,y)
-	{
-		ctx.drawImage(ballImage,x-this.r,y-this.r,this.r*2,this.r*2);
+	drawBall: function(x, y, mass) {
+		// Mass-to-color mapping parameters
+		const minMass = 0.1;
+		const maxMass = 100.0;
+		const massRatio = Math.min(Math.max(
+			(mass - minMass) / (maxMass - minMass),
+			0), 1
+		);
+
+		// HSL color transition: blue (240°) → green (120°) → red (0°)
+		const hue = 240 - (240 * massRatio);
+		const saturation = 80;
+		const lightness = 50 - (massRatio * 15);
+
+		// Create gradient fill
+		const gradient = ctx.createRadialGradient(
+			x - this.r/2, y - this.r/2, this.r/4,
+			x, y, this.r
+		);
+		gradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness+20}%, 1)`);
+		gradient.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`);
+
+		// Draw ball with gradient
+		ctx.beginPath();
+		ctx.arc(x, y, this.r, 0, Math.PI * 2);
+		ctx.fillStyle = gradient;
+		ctx.fill();
+
+		// Add specular highlight
+		ctx.beginPath();
+		ctx.arc(x + this.r/3, y - this.r/3, this.r/4, 0, Math.PI * 2);
+		ctx.fillStyle = `hsla(0, 0%, 100%, 0.4)`;
+		ctx.fill();
 	},
 
 	drawBall1: function(x,y)
@@ -292,6 +337,8 @@
 
 	touchesBegan: function(n,x_,y_)
 	{
+		const newMass = parseFloat(document.getElementById('massInput').value) || 1.0;
+
 		this.touch_x[n]=this.touch_x_1[n]=x_;
 		this.touch_y[n]=this.touch_y_1[n]=y_;
 		
@@ -310,11 +357,14 @@
 			this.Vx[this.num]=0;
 			this.Vy[this.num]=0;
 			this.ball_mode[this.num]=this.adding_mode;
+			this.mass[this.num] = newMass;
 			this.num++;
 		}
 	},
 	touchesMoved: function(n,x_,y_)
 	{
+		const newMass = parseFloat(document.getElementById('massInput').value) || 1.0;
+
 		this.touch_x[n]=x_;
 		this.touch_y[n]=y_;
 		
@@ -327,6 +377,7 @@
 			this.Vx[this.num]=0;
 			this.Vy[this.num]=0;
 			this.ball_mode[this.num]=this.adding_mode;
+			this.mass[this.num] = newMass;
 			this.num++;
 		}
 		 
