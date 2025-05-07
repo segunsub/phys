@@ -46,7 +46,7 @@
 		for(var i=0;i<10;i++)
 			this.touched_ball[i]=-1;
 
-		this.num=10;
+		this.num=5;
 
 		for (var i=0; i<this.num; i++) {
 			this.x[i]=Math.random()*canvas.width;
