@@ -134,9 +134,9 @@ document.getElementById('connectBalls').addEventListener('click', () => {
     const spring = Constraint.create({
         bodyA: ballA,
         bodyB: ballB,
-        stiffness: 0.05,         // gentle pull
+        stiffness: stiffnessValue,         // gentle pull
         damping: 0.01,           // slow energy loss
-        length: radiusA + radiusB + 10, // just beyond touching
+        length: lengthValue, // just beyond touching
         collisionFilter: {
             collideConnected: true
         },
@@ -208,6 +208,7 @@ document.getElementById('clearBalls').addEventListener('click', clearBalls);
 
 // Initial ball
 addBall();
+
 
 // Run engine and renderer
 Render.run(render);

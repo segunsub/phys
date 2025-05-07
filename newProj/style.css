@@ -1,0 +1,39 @@
+canvas{
+    /*position: absolute;*/
+    /*left:0pt;*/
+    /*top:0pt*/
+    border-bottom: 10pt solid black;
+}
+
+div.panel{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    color: white;
+    background: #1e1c1c;
+    border-left: 5pt solid black;
+    font-size: 12pt;
+    white-space: nowrap;
+    overflow-x: auto;
+    padding: 5px;
+}
+
+/*.slider{*/
+/*    width:200pt;*/
+/*}*/
+
+#container {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+}
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+.item-label {
+    display: flex;
+    flex-direction: column;
+}
