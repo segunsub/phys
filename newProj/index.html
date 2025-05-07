@@ -21,30 +21,35 @@
         <div style="text-align: center;margin-top: 10px">
    			<div class="item-label">
                 <label for="Slider1">
-                    Radius:
+                    Radius: <span id="radiusValue">39</span>px
                 </label>
-                <input id="Slider1" class="form-range" type="range" min=1 max=100 step=1 value=39>
+                <input id="Slider1" class="form-range" type="range" min=1 max=100 step=1 value=39 oninput="document.getElementById('radiusValue').textContent = parseFloat(this.value).toFixed(2)">
             </div>
 
             <div class="item-label">
                 <label for="Slider2">
-                    Wall elasticity:
+                    Wall elasticity: <span id="wallValue">0.95</span>
                 </label>
-                <input id="Slider2" class="form-range" type="range" min=0 max=1 step=0.00001 value=0.95>
+                <input id="Slider2" class="form-range" type="range" min=0 max=1 step=0.00001 value=0.95 oninput="document.getElementById('wallValue').textContent = parseFloat(this.value).toFixed(2)">
             </div>
 
             <div class="item-label">
                 <label for="Slider4">
-                    Air resistance:
+                    Air resistance: <span id="airValue">0</span>
                 </label>
-                <input id="Slider4" type="range" class="form-range" min=0 max=0.01 step=0.00001 value=0>
+                <input id="Slider4" type="range" class="form-range" min=0 max=0.01 step=0.00001 value=0 oninput="document.getElementById('airValue').textContent = this.value">
             </div>
 
             <div class="item-label">
                 <label for="Slider3">
-                    Gravity:
+                    Gravity: <span id="gravityValue">1</span>
                 </label>
-                <input id="Slider3" class="form-range" type="range" min=0 max=0.01 step=0.00001 value=0>
+                <input id="Slider3" class="form-range" type="range" min=0 max=20 step=0.00001 value=1 oninput="document.getElementById('gravityValue').textContent = parseFloat(this.value).toFixed(2)">
+            </div>
+
+            <div class="mb-3">
+                <label for="massInput">Ball Mass</label>
+                <input class="form-control" type="number" id="massInput" value="1.0" step="0.1" min="0.1">
             </div>
 
             <div class="item-label">
@@ -83,6 +88,7 @@
                 </div>
 
             </div>
+
 
         </div>
         <input type="button" id="btnRestart" value="Remove All">

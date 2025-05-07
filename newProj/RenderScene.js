@@ -1,45 +1,47 @@
 ﻿renderer = {
 	init: function()
 	{
-        
+
 		this.a=1;
 		this.r=39;
-		
+		this.mass = [];
+		const initialMass = parseFloat(document.getElementById('massInput').value) || 1.0;
 		this.vd=0.95 ;
-		
+
 		this.g=3;
-		
+
 		this.deviceTilt={x:0,y:0.1};
-		
+
 		this.air_res=0;
-		
+
 		this.adding_mode=0;
-		
+
 		this.touch_mode=0;
-		
+
 		this.touched_ball=[];
 		this.touch_x=[];
 		this.touch_y=[];
 		this.touch_x_1=[];
 		this.touch_y_1=[];
-		
+
 		this.x=[];
 		this.y=[];
 		this.Vx=[];
 		this.Vy=[];
 		this.ball_mode=[];
-		
+
 		for(var i=0;i<10;i++)
 			this.touched_ball[i]=-1;
-		
+
 		this.num=10;
-		
+
 		for (var i=0; i<this.num; i++) {
 			this.x[i]=Math.random()*canvas.width;
 			this.y[i]=Math.random()*canvas.height;
 			this.Vx[i]=-10+10*Math.random();
 			this.Vy[i]=-10+10*Math.random();
 			this.ball_mode[i]=0;
+			this.mass[i] = initialMass;
 		}
 		this.DeltaT=0.1;
 
@@ -159,30 +161,51 @@
 		}
 	},
 
-	CalVelocity: function(i,j)
-	{
-		var dx=this.x[i]-this.x[j],dy=this.y[i]-this.y[j];
-		var dr=dx*dx+dy*dy;
-		var V1x,V1y,V2x,V2y;
-		if (dr!=0) {
-			V1x=((this.Vx[j]*dx+this.Vy[j]*dy)*dx+(this.Vx[i]*dy-this.Vy[i]*dx)*dy)/dr;
-			V1y=((this.Vx[j]*dx+this.Vy[j]*dy)*dy-(this.Vx[i]*dy-this.Vy[i]*dx)*dx)/dr;
-			V2x=((this.Vx[i]*dx+this.Vy[i]*dy)*dx+(this.Vx[j]*dy-this.Vy[j]*dx)*dy)/dr;
-			V2y=((this.Vx[i]*dx+this.Vy[i]*dy)*dy-(this.Vx[j]*dy-this.Vy[j]*dx)*dx)/dr;
-			this.Vx[i]=V1x;
-			this.Vy[i]=V1y;
-			this.Vx[j]=V2x;
-			this.Vy[j]=V2y;
-			var dr_=Math.sqrt(dr);
-			if(this.ball_mode[i]!=1)
-			{
-				this.x[i]+=(2*this.r-dr_)*(dx/dr_)*0.5;
-				this.y[i]+=(2*this.r-dr_)*(dy/dr_)*0.5;
-			}
-			if(this.ball_mode[j]!=1)
-			{
-				this.x[j]-=(2*this.r-dr_)*(dx/dr_)*0.5;
-				this.y[j]-=(2*this.r-dr_)*(dy/dr_)*0.5;
+	CalVelocity: function(i, j) {
+		var dx = this.x[i] - this.x[j];
+		var dy = this.y[i] - this.y[j];
+		var dr = dx * dx + dy * dy;
+		if (dr !== 0) {
+			var dr_ = Math.sqrt(dr);
+			var unitNormalX = dx / dr_;
+			var unitNormalY = dy / dr_;
+			var unitTangentX = -dy / dr_;
+			var unitTangentY = dx / dr_;
+
+			// Calculate velocities in normal and tangential directions
+			var v1n = this.Vx[i] * unitNormalX + this.Vy[i] * unitNormalY;
+			var v1t = this.Vx[i] * unitTangentX + this.Vy[i] * unitTangentY;
+			var v2n = this.Vx[j] * unitNormalX + this.Vy[j] * unitNormalY;
+			var v2t = this.Vx[j] * unitTangentX + this.Vy[j] * unitTangentY;
+
+			var m1 = this.mass[i];
+			var m2 = this.mass[j];
+
+			// Compute new normal velocities based on mass
+			var newV1n = ((m1 - m2) * v1n + 2 * m2 * v2n) / (m1 + m2);
+			var newV2n = (2 * m1 * v1n + (m2 - m1) * v2n) / (m1 + m2);
+
+			// Update velocities with new normal and original tangential components
+			this.Vx[i] = newV1n * unitNormalX + v1t * unitTangentX;
+			this.Vy[i] = newV1n * unitNormalY + v1t * unitTangentY;
+			this.Vx[j] = newV2n * unitNormalX + v2t * unitTangentX;
+			this.Vy[j] = newV2n * unitNormalY + v2t * unitTangentY;
+
+			// Position correction based on mass
+			var overlap = 2 * this.r - dr_;
+			if (overlap > 0) {
+				var totalMass = m1 + m2;
+				var correctionRatioi = m2 / totalMass;
+				var correctionRatioj = m1 / totalMass;
+
+				if (this.ball_mode[i] != 1) {
+					this.x[i] += overlap * correctionRatioi * (dx / dr_);
+					this.y[i] += overlap * correctionRatioi * (dy / dr_);
+				}
+				if (this.ball_mode[j] != 1) {
+					this.x[j] -= overlap * correctionRatioj * (dx / dr_);
+					this.y[j] -= overlap * correctionRatioj * (dy / dr_);
+				}
 			}
 		}
 	},
@@ -242,11 +265,14 @@
 	},
 	btnAddClicked: function()
 	{
+		const newMass = parseFloat(document.getElementById('massInput').value) || 1.0;
+
 		this.x[this.num]=Math.random()*canvas.width;
 		this.y[this.num]=Math.random()*canvas.height;
 		this.Vx[this.num]=-5+10*Math.random();
 		this.Vy[this.num]=-5+10*Math.random();
 		this.ball_mode[this.num]=this.adding_mode;
+		this.mass[this.num] = newMass;
 		this.num++;
 	},
 	btnRemoveClicked: function()
