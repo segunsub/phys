@@ -144,7 +144,6 @@
 
 		}
 		for(var i=0;i<this.num;i++) {
-			// Get mass for current ball
 			const currentMass = this.mass[i];
 
 			switch (this.ball_mode[i]) {
@@ -187,7 +186,6 @@
 			var unitTangentX = -dy / dr_;
 			var unitTangentY = dx / dr_;
 
-			// Calculate velocities in normal and tangential directions
 			var v1n = this.Vx[i] * unitNormalX + this.Vy[i] * unitNormalY;
 			var v1t = this.Vx[i] * unitTangentX + this.Vy[i] * unitTangentY;
 			var v2n = this.Vx[j] * unitNormalX + this.Vy[j] * unitNormalY;
@@ -196,17 +194,14 @@
 			var m1 = this.mass[i];
 			var m2 = this.mass[j];
 
-			// Compute new normal velocities based on mass
 			var newV1n = ((m1 - m2) * v1n + 2 * m2 * v2n) / (m1 + m2);
 			var newV2n = (2 * m1 * v1n + (m2 - m1) * v2n) / (m1 + m2);
 
-			// Update velocities with new normal and original tangential components
 			this.Vx[i] = newV1n * unitNormalX + v1t * unitTangentX;
 			this.Vy[i] = newV1n * unitNormalY + v1t * unitTangentY;
 			this.Vx[j] = newV2n * unitNormalX + v2t * unitTangentX;
 			this.Vy[j] = newV2n * unitNormalY + v2t * unitTangentY;
 
-			// Position correction based on mass
 			var overlap = 2 * this.r - dr_;
 			if (overlap > 0) {
 				var totalMass = m1 + m2;
@@ -250,12 +245,10 @@
 			0), 1
 		);
 
-		// HSL color transition: blue (240°) → green (120°) → red (0°)
 		const hue = 240 - (240 * massRatio);
 		const saturation = 80;
 		const lightness = 50 - (massRatio * 15);
 
-		// Create gradient fill
 		const gradient = ctx.createRadialGradient(
 			x - this.r/2, y - this.r/2, this.r/4,
 			x, y, this.r
@@ -263,13 +256,11 @@
 		gradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness+20}%, 1)`);
 		gradient.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`);
 
-		// Draw ball with gradient
 		ctx.beginPath();
 		ctx.arc(x, y, this.r, 0, Math.PI * 2);
 		ctx.fillStyle = gradient;
 		ctx.fill();
 
-		// Add specular highlight
 		ctx.beginPath();
 		ctx.arc(x + this.r/3, y - this.r/3, this.r/4, 0, Math.PI * 2);
 		ctx.fillStyle = `hsla(0, 0%, 100%, 0.4)`;
