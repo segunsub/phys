@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    display: flex !important;
+    height: 100vh;
+    overflow: hidden;
+}
+canvas {
+    flex-grow: 1;
+}
+#menu {
+    width: 250px;
+    background: #222;
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+}
+#menu h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+#menu label {
+    display: block;
+    margin: 10px 0 5px;
+}
+#menu input[type="number"],
+#menu button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}

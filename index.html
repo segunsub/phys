@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gravity Ball App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="world"></canvas>
+
+<div id="menu">
+    <h2>Controls</h2>
+    <label for="gravity">Gravity (Y):</label>
+    <input type="number" id="gravity" value="1" step="0.1">
+
+    <label for="stiffness">Spring Stiffness (0–1):</label>
+    <input type="number" id="stiffness" value="0.05" step="0.01" min="0" max="1">
+
+    <label for="springLength">Spring Length (px):</label>
+    <input type="number" id="springLength" value="100" step="10" min="0">
+
+
+    <div>
+        <button id="addBall">Add Ball</button>
+        <button id="removeBall">Remove Ball</button>
+    </div>
+    <button id="connectBalls">Connect 2 Selected Balls</button>
+    <button id="removeConnection">Remove Connection</button>
+
+    <button id="clearBalls">Clear Balls</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
