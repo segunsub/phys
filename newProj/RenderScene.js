@@ -80,8 +80,9 @@
 				this.touch_x_1[i]=this.touch_x[i];
 				this.touch_y_1[i]=this.touch_y[i];
 				if (this.ball_mode[this.touched_ball[i]]!=1) {
-					this.Vx[this.touched_ball[i]]=-0.5*(this.x[this.touched_ball[i]]-this.touch_x_1[i])/this.DeltaT/10.0;
-					this.Vy[this.touched_ball[i]]=-0.5*(this.y[this.touched_ball[i]]-this.touch_y_1[i])/this.DeltaT/10.0;
+					const massFactor = 1 / this.mass[this.touched_ball[i]];
+					this.Vx[this.touched_ball[i]] = -0.5*(this.x[this.touched_ball[i]]-this.touch_x_1[i])/this.DeltaT/10.0 * massFactor;
+					this.Vy[this.touched_ball[i]] = -0.5*(this.y[this.touched_ball[i]]-this.touch_y_1[i])/this.DeltaT/10.0 * massFactor;
 				}
 				else
 				{
@@ -92,6 +93,13 @@
 			}
 		}
 		for (var t=0; t<10; t++) {
+			for(var i=0; i<this.num; i++) {
+				if(this.ball_mode[i] !== 1) {
+					this.Vx[i] += this.deviceTilt.x * this.g * this.DeltaT;
+					this.Vy[i] += this.deviceTilt.y * this.g * this.DeltaT;
+				}
+			}
+
 			for (var i=0; i<this.num; i++) {
 				if (this.ball_mode[i]!=1)
 				{
@@ -116,9 +124,9 @@
 					this.Vx[i]-=0.3/this.r*(deltaX-2*this.r*deltaX/Math.sqrt(deltaX*deltaX+deltaY*deltaY));
 					this.Vy[i]-=0.3/this.r*(deltaY-2*this.r*deltaY/Math.sqrt(deltaX*deltaX+deltaY*deltaY));
 				}
-				
-				this.Vx[i]-=this.Vx[i]*this.air_res;
-				this.Vy[i]-=this.Vy[i]*this.air_res;
+
+				this.Vx[i] -= (this.Vx[i] * this.air_res) / this.mass[i];
+				this.Vy[i] -= (this.Vy[i] * this.air_res) / this.mass[i];
 				
 				
 				if (this.x[i]>canvas.width-this.r) {
