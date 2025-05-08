@@ -1,36 +1,108 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Gravity Ball App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        Balls Physics Simulation
+    </title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script src="main.js"></script>
+    <script src="RenderScene.js"></script>
 </head>
 <body>
+<image id="ballImage" src="ball.png" style="display:none"></image>
+<image id="ballImage1" src="ball1.png" style="display:none"></image>
+<div id="container">
+    <canvas id="canvas"></canvas>
+    <div class="panel" id="panel">
+        <div id="massSpectrumLegend">
+            <canvas id="massGradient" width="200" height="30"></canvas>
+            <div class="legend-labels">
+                <span>1 kg</span>
+                <span>100 kg</span>
+            </div>
+        </div>
 
-<canvas id="world"></canvas>
+        <div style="text-align: center;margin-top: 10px">
+   			<div class="item-label">
+                <label for="Slider1">
+                    Radius: <span id="radiusValue">39</span>px
+                </label>
+                <input id="Slider1" class="form-range" type="range" min=1 max=100 step=1 value=39 oninput="document.getElementById('radiusValue').textContent = parseFloat(this.value).toFixed(2)">
+            </div>
 
-<div id="menu">
-    <h2>Controls</h2>
-    <label for="gravity">Gravity (Y):</label>
-    <input type="number" id="gravity" value="1" step="0.1">
+            <div class="item-label">
+                <label for="Slider2">
+                    Wall elasticity: <span id="wallValue">0.95</span>
+                </label>
+                <input id="Slider2" class="form-range" type="range" min=0 max=1 step=0.00001 value=0.95 oninput="document.getElementById('wallValue').textContent = parseFloat(this.value).toFixed(2)">
+            </div>
 
-    <label for="stiffness">Spring Stiffness (0–1):</label>
-    <input type="number" id="stiffness" value="0.05" step="0.01" min="0" max="1">
+            <div class="item-label">
+                <label for="Slider4">
+                    Air resistance: <span id="airValue">0</span>
+                </label>
+                <input id="Slider4" type="range" class="form-range" min=0 max=0.01 step=0.00001 value=0 oninput="document.getElementById('airValue').textContent = this.value">
+            </div>
 
-    <label for="springLength">Spring Length (px):</label>
-    <input type="number" id="springLength" value="100" step="10" min="0">
+            <div class="item-label">
+                <label for="Slider3">
+                    Gravity: <span id="gravityValue">1</span>
+                </label>
+                <input id="Slider3" class="form-range" type="range" min=0 max=20 step=0.00001 value=1 oninput="document.getElementById('gravityValue').textContent = parseFloat(this.value).toFixed(2)">
+            </div>
+
+            <div class="mb-3">
+                <label for="massInput">Ball Mass</label>
+                <input class="form-control" type="number" id="massInput" value="1.0" step="0.1" min="0.1">
+            </div>
+
+            <div class="item-label">
+                <label>
+                    Adjust Ball Count:
+                </label>
+                <div>
+                    <input type="button" id="stepperUp" value="+">
+                    <input type="button" id="stepperDown" value="-">
+                </div>
+            </div>
+
+            <div class="item-label" style="margin-top: 10px">
+                <div class="form-check form-switch">
+                    <input id="segment1" class="form-check-input switch-group" type="checkbox" checked>
+                    <label class="form-check-label" for="segment1">Free</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input switch-group" type="checkbox" id="segment2">
+                    <label class="form-check-label" for="segment2">Fixed</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input id="segment3" class="form-check-input switch-group" type="checkbox" >
+                    <label class="form-check-label" for="segment3">Connected</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input switch-group" type="checkbox" id="segment4">
+                    <label class="form-check-label" for="segment4">Spring</label>
+                </div>
+            </div>
+
+            <div class="item-label" style="margin-top: 10px">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="switch1">
+                    <label class="form-check-label" for="switch1">Drag to add balls</label>
+                </div>
+
+            </div>
 
 
-    <div>
-        <button id="addBall">Add Ball</button>
-        <button id="removeBall">Remove Ball</button>
+        </div>
+        <input type="button" id="btnRestart" value="Remove All">
     </div>
-    <button id="connectBalls">Connect 2 Selected Balls</button>
-    <button id="removeConnection">Remove Connection</button>
 
-    <button id="clearBalls">Clear Balls</button>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-<script src="index.js"></script>
+
 </body>
 </html>
